@@ -1,4 +1,5 @@
 require_relative 'sudoku'
+require_relative 'reset_screen'
 
 # The sudoku puzzles that your program will solve can be found
 # in the sudoku_puzzles.txt file.
@@ -13,11 +14,18 @@ require_relative 'sudoku'
 # so we call String#chomp to remove them.
 
 board_string = File.readlines('sudoku_puzzles.txt').first.chomp
+hash_borad = get_solution_hash(board_string)
 
-solved_board = solve(board_string)
+reset_screen
+
+pretty_board(hash_borad)
+sleep(1)
+
+solved_board = solve(hash_borad)
+
 if solved?(solved_board)
   puts "The board was solved!"
-  puts pretty_board(solved_board)
+  # puts pretty_board(solved_board)
 else
   puts "The board wasn't solved :("
 end

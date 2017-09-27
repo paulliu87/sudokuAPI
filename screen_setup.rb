@@ -1,0 +1,2 @@
+reset_screen
+pretty_board
