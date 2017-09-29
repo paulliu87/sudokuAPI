@@ -114,9 +114,36 @@ def find_block_with_least_unknown(board)
 end
 
 def find_available_options_in_row(board, row_index)
-  
+  results = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+  start_index = row_index / 9 * 9
+  end_index = start_index + 8
+  for i in start_index..end_index do
+      results.delete_if { |result| results == board[i] }
+  end
+  results
 end
 
+def find_available_options_in_col(board, col_index)
+  results = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+  start_index = if col_index / 9 > 0 (col_index / 9 - 1) * 9 + col_index % 9 : col_index / 9 * 9 + col_index % 9
+  end_index = if col_index / 9 < 8 (col_index / 9 + 1) * 9 + col_index % 9 : col_index / 9 * 9 + col_index % 9
+  while end_index >= start_index
+      results.delete_if { |result| results == board[start_index] }
+      start_index = start_index + 9
+  end
+  results
+end
+
+def find_available_options_in_block(board, block_index)
+  results = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+  start_index = if row_index / 9 > 0 (row_index / 9 - 1) * 9 + row_index % 9 : row_index / 9 * 9 + row_index % 9
+  end_index = if row_index / 9 < 8 (row_index / 9 + 1) * 9 + row_index % 9 : row_index / 9 * 9 + row_index % 9
+  while end_index >= start_index
+      results.delete_if { |result| results == board[start_index] }
+      start_index = start_index + 9
+  end
+  results
+end
  0  1  2  3  4  5  6  7  8
  9 10 11 12 13 14 15 16 17
 18 19 20 21 22 23 24 25 26
