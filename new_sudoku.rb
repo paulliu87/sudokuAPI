@@ -10,17 +10,17 @@
 # 72 73 74 75 76 77 78 79 80
 
 def solve(board)
-  puts "this is solve(board) function"
+  # puts "this is solve(board) function"
 
   while fill_the_cell_with_only_option(board)
+    puts board
     fill_the_cell_with_only_option(board)
   end
-  guess(board)
+  # guess(board)
 end
 
 def guess(board)
-  puts "this is guess(board) function"
-
+  # puts "this is guess(board) function"
   best_guess = find_index_with_least_unknown(board)
   index = best_guess.keys.first
   options = best_guess.values.first
@@ -28,7 +28,7 @@ def guess(board)
   if !options.empty?
     copy_board = board.dup
     options.each do |option|
-      try(copy_board, index, option)
+      result = try(copy_board, index, option)
       if solved?(copy_board)
         return copy_board
       else
@@ -40,25 +40,46 @@ def guess(board)
   end
 end
 
+def try(board, index, option)
+  # puts "the board is #{board}, and index is #{index}, option is #{option}"
+  result = board.dup
+  result[index] = option.to_s
+  result
+end
+
+def solved?(board)
+  find_index_with_least_row_unknown(board).nil? && find_index_with_least_col_unknown(board).nil? && find_index_with_least_block_unknown(board).nil?
+end
+
 def find_index_with_least_unknown(board)
-  puts "this is find_index_with_least_unknown(board) function"
+  # puts "this is find_index_with_least_unknown(board) function"
 
   indexes = []
   row_index = find_index_with_least_row_unknown(board)
-  row_options = find_available_options_in_row(board, row_index)
-  col_index = find_col_with_least_unknown(board)
-  col_options = find_available_options_in_col(board, col_index)
+  # puts "row_index is #{row_index}"
+  row_options = find_available_options_in_all(board, row_index)
+  # puts "row_options is #{row_options}"
+  col_index = find_index_with_least_col_unknown(board)
+  # puts "col_index is #{col_index}"
+  col_options = find_available_options_in_all(board, col_index)
+  # puts "col_options is #{col_options}"
   block_index = find_index_with_least_block_unknown(board)
-  block_options = find_available_options_in_block(board, block_index)
-  indexes[row_options] = row_index
-  indexes[col_options] = col_index
-  indexes[block_options] = block_index
+  # puts "block_index is #{block_index}"
+  block_options = find_available_options_in_all(board, block_index)
+  # puts "block_options is #{block_options}"
+  indexes[row_options.length] = row_index
+  indexes[col_options.length] = col_index
+  indexes[block_options.length] = block_index
   # method = find_best_start_method(row_options, col_options, block_options)
-  { indexes.compact.first => [row_options | col_options | block_options] }
+  { indexes.compact.first => indexes.find_index { |x| x } }
+end
+
+def find_available_options_in_all(board, index)
+  find_available_options_in_row(board, index) & find_available_options_in_col(board, index) & find_available_options_in_block(board, index)
 end
 
 def find_best_start_method(row_options, col_options, block_options)
-  puts "this is find_best_start_method(row_options, col_options, block_options) function"
+  # puts "this is find_best_start_method(row_options, col_options, block_options) function"
 
   if row_options.length <= col_options.length && row_options <= block_options
     return "row"
@@ -70,60 +91,72 @@ def find_best_start_method(row_options, col_options, block_options)
 end
 
 def fill_the_cell_with_only_option(board)
-  puts "this is fill_the_cell_with_only_option(board) function"
+  # puts "this is fill_the_cell_with_only_option(board) function"
+  # puts board
 
   row_index = find_index_with_least_row_unknown(board)
-  row_options = find_available_options_in_row(board, row_index)
-  col_index = find_col_with_least_unknown(board)
-  col_options = find_available_options_in_col(board, col_index)
+  # puts "row_index is #{row_index}"
+  row_options = find_available_options_in_all(board, row_index)
+  # puts "row_options is #{row_options}"
+  col_index = find_index_with_least_col_unknown(board)
+  # puts "col_index is #{col_index}"
+  col_options = find_available_options_in_all(board, col_index)
+  # puts "col_options is #{col_options}"
   block_index = find_index_with_least_block_unknown(board)
-  block_options = find_available_options_in_block(board, block_index)
+  # puts "block_index is #{block_index}"
+  block_options = find_available_options_in_all(board, block_index)
+  # puts "block_options is #{block_options}"
   if row_options.length == 1
-    board[row_index] = row_options.first
+    board[row_index] = row_options.first.to_s
     return true
   elsif col_options.length == 1
-    board[col_index] = col_options.first
+    board[col_index] = col_options.first.to_s
     return true
   elsif block_options.length == 1
-    board[block_index] = block_options.first
+    board[block_index] = block_options.first.to_s
     return true
+  # elsif
   else
     return false
   end
 end
 
 def find_index_with_least_row_unknown(board)
-  puts "this is find_index_with_least_row_unknown(board) function"
+  # puts "this is find_index_with_least_row_unknown(board) function"
 
-  max_unknown = []
+  unknowns = []
+  index = 0
   for i in 0..8 do
     num_unknown = 0
     for j in 0..8 do
-      num_unknown += 1 if board[i + j] == '-'
+      num_unknown += 1 if board[index] == '-'
+      index += 1
     end
-    max_unknown[num_unknown] = i + j
+    unknowns[num_unknown] = index - 1
+    # puts "i is #{i}, j is #{j}, index is #{index} and unknowns is #{unknowns}"
   end
-  max_unknown.compact.first
+  unknowns.compact.first
 end
 
-def find_col_with_least_unknown(board)
-  puts "this is find_col_with_least_unknown(board) function"
+def find_index_with_least_col_unknown(board)
+  # puts "this is find_index_with_least_col_unknown(board) function"
 
-  max_unknown = []
+  unknowns = []
+  index = 0
   for i in 0..8 do
     num_unknown = 0
     for j in 0..8 do
       num_unknown += 1 if board[i + j * 9] == '-'
     end
-    max_unknown[num_unknown] = i + j * 9
+    unknowns[num_unknown] = index
   end
-  max_unknown.compact.first
+  unknowns.compact.first
 end
 
 def find_index_with_least_block_unknown(board)
-  puts "this is find_index_with_least_block_unknown(board) function"
+  # puts "this is find_index_with_least_block_unknown(board) function"
 
-  max_unknown = []
+  unknowns = []
   for i in 0..8 do
     num_unknown = 0
     index = 0
@@ -131,51 +164,52 @@ def find_index_with_least_block_unknown(board)
       if i <= 2
         if board[(i * 3) + j] == '-'
           index = (i * 3) + j
-          num_unknow += 1
+          num_unknown += 1
         end
         if board[(i * 3) + j + 9] == '-'
           index = (i * 3) + j + 9
-          num_unknow += 1
+          num_unknown += 1
         end
         if board[(i * 3) + j + 18] == '-'
           index = (i * 3) + j + 18
-          num_unknow += 1
+          num_unknown += 1
         end
       elsif i >= 3 && i <= 5
         if board[(i * 3) + j + 27] == '-'
           index = (i * 3) + j + 27
-          num_unknow += 1
+          num_unknown += 1
         end
         if board[(i * 3) + j + 9 + 27] == '-'
           index = (i * 3) + j + 9 + 27
-          num_unknow += 1
+          num_unknown += 1
         end
         if board[(i * 3) + j + 18 + 27] == '-'
           index = (i * 3) + j + 18 + 27
-          num_unknow += 1
+          num_unknown += 1
         end
       else
         if board[(i * 3) + j + 54] == '-'
           index = (i * 3) + j + 54
-          num_unknow += 1
+          num_unknown += 1
         end
         if board[(i * 3) + j + 9 + 54] == '-'
           index = (i * 3) + j + 9 + 54
-          num_unknow += 1
+          num_unknown += 1
         end
         if board[(i * 3) + j + 18 + 54] == '-'
           index = (i * 3) + j + 18 + 54
-          num_unknow += 1
+          num_unknown += 1
         end
       end
     end
-    max_unknown[num_unknown] = index
+    unknowns[num_unknown] = index
+    # puts "i is #{i}, j is #{j}, index is #{index} and unknowns is #{unknowns}"
   end
-  max_unknown.compact.first
+  unknowns.compact.first
 end
 
 def find_available_options_in_row(board, row_index)
-  puts "this is find_available_options_in_row(board, row_index) function"
+  # puts "this is find_available_options_in_row(board, row_index) function"
 
   results = [1, 2, 3, 4, 5, 6, 7, 8, 9]
   start_index = row_index / 9 * 9
@@ -187,7 +221,7 @@ def find_available_options_in_row(board, row_index)
 end
 
 def find_available_options_in_col(board, col_index)
-  puts "this is find_available_options_in_col(board, col_index) function"
+  # puts "this is find_available_options_in_col(board, col_index) function"
 
   results = [1, 2, 3, 4, 5, 6, 7, 8, 9]
   start_index = ((col_index / 9) > 0) ? ((col_index / 9 - 1) * 9 + col_index % 9) : (col_index / 9 * 9 + col_index % 9)
@@ -200,7 +234,7 @@ def find_available_options_in_col(board, col_index)
 end
 
 def find_available_options_in_block(board, block_index)
-  puts "this is find_available_options_in_block(board, block_index) function"
+  # puts "this is find_available_options_in_block(board, block_index) function"
 
   results = [1, 2, 3, 4, 5, 6, 7, 8, 9]
   block_row_index = block_index / 8

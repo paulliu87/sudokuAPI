@@ -14,15 +14,16 @@ def move_to_home
 end
 
 def pretty_board(board)
-  if board.nil
+  if board.nil?
     print "there is no board"
   else
     i = 0
     board.each_char do |char|
-      print char
+      print " #{char}"
       if i != 8
-        i++
+        i += 1
       else
+        print "\n"
         i = 0
       end
     end
