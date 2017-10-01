@@ -10,38 +10,18 @@
 # 72 73 74 75 76 77 78 79 80
 
 def solve(board)
-  # puts "this is solve(board) function"
-  # puts board
-  index = 0
-
-  100.times do
-    puts board
-    if board[index] == "-"
-      unknowns = find_available_options_in_all(board, index)
-      num_unknown = unknowns.length
-      puts "index is #{index}, unknowns is #{unknowns}"
-      if num_unknown == 1
-        board[index] = unknowns.first
-      elsif num_unknown != 0
-        unknowns[num_unknown] = index
-      end
-      if index <= board.length
-        index += 1
-      else
-        index = 0
-      end
+  board.each_char_with_index do |char, index|
+    if char == "-" && find_available_options_in_all(board, index).length != 0
+      fill_the_cell(board, index)
+    elsif char == "-" && find_available_options_in_all(board, index).length == 0
+      break
     else
-      if index <= board.length
-        index += 1
-      else
-        index = 0
-      end
       next
     end
   end
-  # guess(board)
 end
-# "12345678912345678912345678912-456789123456789123456789123456789123456789123456789"
+"7591824638163475292345697189672583411487362953259-4687582671934493825176671493852"
+
 def guess(board)
   # puts "this is guess(board) function"
   best_guess = find_index_with_least_unknown(board)
@@ -248,8 +228,6 @@ def find_index_with_least_block_unknown(board)
 end
 
 def find_available_options_in_row(board, row_index)
-  # puts "this is find_available_options_in_row(board, row_index) function"
-
   results = [1, 2, 3, 4, 5, 6, 7, 8, 9]
   start_index = row_index / 9 * 9
   end_index = start_index + 8
@@ -260,26 +238,22 @@ def find_available_options_in_row(board, row_index)
 end
 
 def find_available_options_in_col(board, col_index)
-  # puts "this is find_available_options_in_col(board, col_index) function"
-
   results = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-  start_index = ((col_index / 9) > 0) ? ((col_index / 9 - 1) * 9 + col_index % 9) : (col_index / 9 * 9 + col_index % 9)
-  end_index = ((col_index / 9) < 8) ? ((col_index / 9 + 1) * 9 + col_index % 9) : (col_index / 9 * 9 + col_index % 9)
+  start_index = 0 * 9 + col_index % 9
+  end_index = 8 * 9 + col_index % 9
   while end_index >= start_index
-      results.delete_if { |result| result.to_s == board[start_index] }
+      results.delete_if {|result| result.to_s == board[start_index] }
       start_index = start_index + 9
   end
   results
 end
 
 def find_available_options_in_block(board, block_index)
-  # puts "this is find_available_options_in_block(board, block_index) function"
-
   results = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-  block_row_index = block_index / 8
+  block_row_index = block_index / 8 / 3
   block_col_index = block_index % 3
-  block_index_offset = block_index - (block_row_index * 9) - (block_col_index)
   block_base_indexes = [0, 1, 2, 9, 10, 11, 18, 19, 20]
+  block_index_offset = block_index - block_base_indexes[(block_row_index * 3) + block_col_index]
   block_base_indexes.each do |block_base_index|
     index = block_base_index + block_index_offset
     results.delete_if { |result| result.to_s == board[index] }
