@@ -59,217 +59,97 @@ def try(board, index, option)
 end
 
 def solved?(board)
-  find_index_with_least_row_unknown(board).nil? && find_index_with_least_col_unknown(board).nil? && find_index_with_least_block_unknown(board).nil?
+  return false if !solved_in_all_rows(board)
+  return false if !solved_in_all_cols(board)
+  return false if !solved_in_all_blocks(board)
+  return true
 end
 
-def find_index_with_least_unknown(board)
-  # puts "this is find_index_with_least_unknown(board) function"
+def solved_in_all_rows(board)
+  return false if !no_empty_cell_in_rows(board)
+  return false if !no_duplicates_in_rows(board)
+  return true
+end
 
-  indexes = []
-  row_index = find_index_with_least_row_unknown(board)
-  # puts "row_index is #{row_index}"
-  row_options = find_available_options_in_all(board, row_index)
-  # puts "row_options is #{row_options}"
-  col_index = find_index_with_least_col_unknown(board)
-  # puts "col_index is #{col_index}"
-  col_options = find_available_options_in_all(board, col_index)
-  # puts "col_options is #{col_options}"
-  block_index = find_index_with_least_block_unknown(board)
-  # puts "block_index is #{block_index}"
-  block_options = find_available_options_in_all(board, block_index)
-  # puts "block_options is #{block_options}"
-  indexes[row_options.length] = row_index
-  indexes[col_options.length] = col_index
-  indexes[block_options.length] = block_index
-  # method = find_best_start_method(row_options, col_options, block_options)
-  { indexes.compact.first => indexes.find_index { |x| x } }
+def no_empty_cell_in_rows(board)
+  [0,9,18,27,36,45,54,63,72].each do |index|
+    return false if find_empty_cell_in_row(index)
+  end
+end
+
+def find_empty_cell_in_row(index)
+  get_row_indexes(index).each do |cur_index|
+    return true if board[cur_index] == "-"
+  end
+end
+
+def no_duplicates_in_rows(board)
+  [0, 9, 18, 27, 36, 45, 54, 63, 72].each do |index|
+    return false if find_duplicates_in_row(index)
+  end
+end
+
+def find_duplicates_in_row(index)
+  results = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+  chars_in_row = get_row_indexes(index).map { |row_index| board[row_index] }
+  !(results - chars_in_row).empty?
 end
 
 def find_available_options_in_all(board, index)
   find_available_options_in_row(board, index) & find_available_options_in_col(board, index) & find_available_options_in_block(board, index)
 end
 
-def find_best_start_method(row_options, col_options, block_options)
-  # puts "this is find_best_start_method(row_options, col_options, block_options) function"
-
-  if row_options.length <= col_options.length && row_options <= block_options
-    return "row"
-  elsif row_options.length >= col_options.length && col_options <= block_options
-    return "col"
-  else
-    return "block"
-  end
-end
-
-def fill_the_cell_with_only_option(board)
-  # puts "this is fill_the_cell_with_only_option(board) function"
-  # puts board
-
-  row_index = find_index_with_least_row_unknown(board)
-  puts "row_index is #{row_index}"
-  row_options = find_available_options_in_all(board, row_index)
-  puts "row_options is #{row_options}"
-  col_index = find_index_with_least_col_unknown(board)
-  puts "col_index is #{col_index}"
-  col_options = find_available_options_in_all(board, col_index)
-  puts "col_options is #{col_options}"
-  block_index = find_index_with_least_block_unknown(board)
-  puts "block_index is #{block_index}"
-  block_options = find_available_options_in_all(board, block_index)
-  puts "block_options is #{block_options}"
-  if row_options.length == 1
-    board[row_index] = row_options.first.to_s
-    return true
-  elsif col_options.length == 1
-    board[col_index] = col_options.first.to_s
-    return true
-  elsif block_options.length == 1
-    board[block_index] = block_options.first.to_s
-    return true
-  # elsif
-  else
-    return false
-  end
-end
-
-def find_index_with_least_row_unknown(board)
-  # puts "this is find_index_with_least_row_unknown(board) function"
-
-  unknowns = []
-  index = 0
-  for i in 0..8 do
-    num_unknown = 0
-    for j in 0..8 do
-      num_unknown += 1 if board[index] == '-'
-      index += 1
-    end
-    if num_unknown != 0
-      unknowns[num_unknown] = index - 1
-    end
-    # puts "i is #{i}, j is #{j}, index is #{index} and unknowns is #{unknowns}"
-  end
-  unknowns.compact.first
-end
-
-def find_index_with_least_col_unknown(board)
-  # puts "this is find_index_with_least_col_unknown(board) function"
-
-  unknowns = []
-  index = 0
-  for i in 0..8 do
-    num_unknown = 0
-    for j in 0..8 do
-      num_unknown += 1 if board[i + j * 9] == '-'
-    end
-    if num_unknown != 0
-      unknowns[num_unknown] = index
-    end
-  end
-  unknowns.compact.first
-end
-
-def find_index_with_least_block_unknown(board)
-  # puts "this is find_index_with_least_block_unknown(board) function"
-
-  # unknowns = []
-  # for i in 0..8 do
-  #   num_unknown = 0
-  #   index = 0
-  #   for j in 0..2 do
-  #     if i <= 2
-  #       puts "i is #{i}, j is #{j}, index is #{index} and unknowns is #{unknowns}"
-  #       puts "#{board[(i * 3) + j]}"
-  #       if board[(i * 3) + j] == '-'
-  #         index = (i * 3) + j
-  #         num_unknown += 1
-  #       end
-  #       if board[(i * 3) + j + 9] == '-'
-  #         index = (i * 3) + j + 9
-  #         num_unknown += 1
-  #       end
-  #       if board[(i * 3) + j + 18] == '-'
-  #         index = (i * 3) + j + 18
-  #         num_unknown += 1
-  #       end
-  #     elsif i >= 3 && i <= 5
-  #       if board[(i * 3) + j + 27] == '-'
-  #         index = (i * 3) + j + 27
-  #         num_unknown += 1
-  #       end
-  #       if board[(i * 3) + j + 9 + 27] == '-'
-  #         index = (i * 3) + j + 9 + 27
-  #         num_unknown += 1
-  #       end
-  #       if board[(i * 3) + j + 18 + 27] == '-'
-  #         index = (i * 3) + j + 18 + 27
-  #         num_unknown += 1
-  #       end
-  #     else
-  #       if board[(i * 3) + j + 54] == '-'
-  #         index = (i * 3) + j + 54
-  #         num_unknown += 1
-  #       end
-  #       if board[(i * 3) + j + 9 + 54] == '-'
-  #         index = (i * 3) + j + 9 + 54
-  #         num_unknown += 1
-  #       end
-  #       if board[(i * 3) + j + 18 + 54] == '-'
-  #         index = (i * 3) + j + 18 + 54
-  #         num_unknown += 1
-  #       end
-  #     end
-  #
-  #   end
-  # block_row_index = block_index / 8
-  # block_col_index = block_index % 3
-  # block_index_offset = block_index - (block_row_index * 9) - (block_col_index)
-  # block_base_indexes = [0, 1, 2, 9, 10, 11, 18, 19, 20]
-  # block_base_indexes.each do |block_base_index|
-  #   index = block_base_index + block_index_offset
-  #   results.delete_if { |result| result.to_s == board[index] }
-  # end
-  #   if num_unknown != 0
-  #     unknowns[num_unknown] = index
-  #   end
-  # end
-  # unknowns.compact.first
-end
-
 def find_available_options_in_row(board, row_index)
   results = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-  start_index = row_index / 9 * 9
-  end_index = start_index + 8
-  for i in start_index..end_index do
-      results.delete_if { |result| result.to_s == board[i] }
+  get_row_indexes(row_index).each do |index|
+      results.delete_if { |result| result.to_s == board[index] }
   end
   results
 end
 
 def find_available_options_in_col(board, col_index)
   results = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-  start_index = 0 * 9 + col_index % 9
-  end_index = 8 * 9 + col_index % 9
-  while end_index >= start_index
-      results.delete_if {|result| result.to_s == board[start_index] }
-      start_index = start_index + 9
+  get_col_indexes(col_index).each do |index|
+      results.delete_if {|result| result.to_s == board[index] }
   end
   results
 end
 
 def find_available_options_in_block(board, block_index)
   results = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-  block_indexes = get_block_indexes(block_index)
-  block_indexes.each do |index|
+  get_block_indexes(block_index).each do |index|
     results.delete_if { |result| result.to_s == board[index] }
   end
   results
 end
 
+def get_row_indexes(index)
+  indexes = []
+  start_index = index / 9 * 9
+  end_index = start_index + 8
+  while start_index <= end_index
+    indexes.push(start_index)
+    start_index += 1
+  end
+  indexes
+end
+
+def get_col_indexes(index)
+  indexes = []
+  start_index = 0 * 9 + index % 9
+  end_index = 8 * 9 + index % 9
+  while end_index >= start_index
+    indexes.push(start_index)
+    start_index += 9
+  end
+  indexes
+end
+
 def get_block_indexes(index)
-  block_row_index = index / 9 % 3
-  block_col_index = index % 3
+  # block_row_index = index / 9 % 3
+  # block_col_index = index % 3
   block_base_indexes = [0, 1, 2, 9, 10, 11, 18, 19, 20]
-  block_index_offset = index - block_base_indexes[(block_row_index * 3) + block_col_index]
+  block_index_offset = index - block_base_indexes[(index / 9 % 3 * 3) + index % 3]
   block_base_indexes.map { |index| index += block_index_offset }
 end
 
