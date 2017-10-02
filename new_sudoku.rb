@@ -155,6 +155,36 @@ def find_duplicates_in_col(index)
   !(results - chars_in_col).empty?
 end
 
+def solved_in_all_blocks(board)
+  return false if !no_empty_cell_in_blocks(board)
+  return false if !no_duplicates_in_blocks(board)
+  return true
+end
+
+def no_empty_cell_in_blocks(board)
+  [0,9,18,27,36,45,54,63,72].each do |index|
+    return false if find_empty_cell_in_block(index)
+  end
+end
+
+def find_empty_cell_in_block(index)
+  get_block_indexes(index).each do |cur_index|
+    return true if board[cur_index] == "-"
+  end
+end
+
+def no_duplicates_in_blocks(board)
+  [0, 9, 18, 27, 36, 45, 54, 63, 72].each do |index|
+    return false if find_duplicates_in_block(index)
+  end
+end
+
+def find_duplicates_in_block(index)
+  results = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+  chars_in_block = get_block_indexes(index).map { |block_index| board[block_index] }
+  !(results - chars_in_block).empty?
+end
+
 def find_available_options_in_all(board, index)
   find_available_options_in_col(board, index) & find_available_options_in_col(board, index) & find_available_options_in_block(board, index)
 end
