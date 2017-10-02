@@ -12,9 +12,11 @@
 def solve(board)
   initial_board = ""
   while true
+    # puts board
     initial_board = board.dup
     board.each_char.with_index(0) do |char, index|
       options = find_available_options_in_all(board, index)
+      puts "char is #{char}, index is #{index} and options are #{options}"
       if char == "-" && options.length == 1
         # fill_the_cell(board, index)
         board[index] = options.first.to_s
@@ -29,7 +31,7 @@ def solve(board)
   end
 end
 # board = "7591824638163475292345697189672583411487362953259--687582671934493825176671493852"
-
+# board = "123456789123456789123456789123456789123456789123456789123456789123456789123456789"
 def guess(board)
   # puts "this is guess(board) function"
   best_guess = find_index_with_least_unknown(board)
@@ -73,23 +75,26 @@ end
 
 def no_empty_cell_in_rows(board)
   [0,9,18,27,36,45,54,63,72].each do |index|
-    return false if find_empty_cell_in_row(index)
+    return false if find_empty_cell_in_row(board, index)
   end
+  return true
 end
 
-def find_empty_cell_in_row(index)
+def find_empty_cell_in_row(board, index)
   get_row_indexes(index).each do |cur_index|
     return true if board[cur_index] == "-"
   end
+  return false
 end
 
 def no_duplicates_in_rows(board)
   [0, 9, 18, 27, 36, 45, 54, 63, 72].each do |index|
-    return false if find_duplicates_in_row(index)
+    return false if find_duplicates_in_row(board, index)
   end
+  return true
 end
 
-def find_duplicates_in_row(index)
+def find_duplicates_in_row(board, index)
   results = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
   chars_in_row = get_row_indexes(index).map { |row_index| board[row_index] }
   !(results - chars_in_row).empty?
@@ -103,23 +108,26 @@ end
 
 def no_empty_cell_in_cols(board)
   [0,9,18,27,36,45,54,63,72].each do |index|
-    return false if find_empty_cell_in_col(index)
+    return false if find_empty_cell_in_col(board, index)
   end
+  return true
 end
 
-def find_empty_cell_in_col(index)
+def find_empty_cell_in_col(board, index)
   get_col_indexes(index).each do |cur_index|
     return true if board[cur_index] == "-"
   end
+  return false
 end
 
 def no_duplicates_in_cols(board)
   [0, 9, 18, 27, 36, 45, 54, 63, 72].each do |index|
-    return false if find_duplicates_in_col(index)
+    return false if find_duplicates_in_col(board, index)
   end
+  return true
 end
 
-def find_duplicates_in_col(index)
+def find_duplicates_in_col(board, index)
   results = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
   chars_in_col = get_col_indexes(index).map { |col_index| board[col_index] }
   !(results - chars_in_col).empty?
@@ -133,23 +141,26 @@ end
 
 def no_empty_cell_in_cols(board)
   [0,9,18,27,36,45,54,63,72].each do |index|
-    return false if find_empty_cell_in_col(index)
+    return false if find_empty_cell_in_col(board, index)
   end
+  return true
 end
 
-def find_empty_cell_in_col(index)
+def find_empty_cell_in_col(board, index)
   get_col_indexes(index).each do |cur_index|
     return true if board[cur_index] == "-"
   end
+  return false
 end
 
 def no_duplicates_in_cols(board)
   [0, 9, 18, 27, 36, 45, 54, 63, 72].each do |index|
-    return false if find_duplicates_in_col(index)
+    return false if find_duplicates_in_col(board, index)
   end
+  return true
 end
 
-def find_duplicates_in_col(index)
+def find_duplicates_in_col(board, index)
   results = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
   chars_in_col = get_col_indexes(index).map { |col_index| board[col_index] }
   !(results - chars_in_col).empty?
@@ -163,30 +174,33 @@ end
 
 def no_empty_cell_in_blocks(board)
   [0,9,18,27,36,45,54,63,72].each do |index|
-    return false if find_empty_cell_in_block(index)
+    return false if find_empty_cell_in_block(board, index)
   end
+  return true
 end
 
-def find_empty_cell_in_block(index)
+def find_empty_cell_in_block(board, index)
   get_block_indexes(index).each do |cur_index|
     return true if board[cur_index] == "-"
   end
+  return false
 end
 
 def no_duplicates_in_blocks(board)
   [0, 9, 18, 27, 36, 45, 54, 63, 72].each do |index|
-    return false if find_duplicates_in_block(index)
+    return false if find_duplicates_in_block(board, index)
   end
+  return true
 end
 
-def find_duplicates_in_block(index)
+def find_duplicates_in_block(board, index)
   results = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
   chars_in_block = get_block_indexes(index).map { |block_index| board[block_index] }
   !(results - chars_in_block).empty?
 end
 
 def find_available_options_in_all(board, index)
-  find_available_options_in_col(board, index) & find_available_options_in_col(board, index) & find_available_options_in_block(board, index)
+  find_available_options_in_row(board, index) & find_available_options_in_col(board, index) & find_available_options_in_block(board, index)
 end
 
 def find_available_options_in_row(board, row_index)
