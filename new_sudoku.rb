@@ -10,17 +10,25 @@
 # 72 73 74 75 76 77 78 79 80
 
 def solve(board)
-  board.each_char_with_index do |char, index|
-    if char == "-" && find_available_options_in_all(board, index).length != 0
-      fill_the_cell(board, index)
-    elsif char == "-" && find_available_options_in_all(board, index).length == 0
-      break
-    else
-      next
+  initial_board = ""
+  while true
+    initial_board = board.dup
+    board.each_char.with_index(0) do |char, index|
+      options = find_available_options_in_all(board, index)
+      if char == "-" && options.length == 1
+        # fill_the_cell(board, index)
+        board[index] = options.first.to_s
+      elsif char == "-" && options.length == 0
+        puts "index is #{index} and options are #{options}"
+        break
+      else
+        next
+      end
     end
+    break if initial_board == board
   end
 end
-"7591824638163475292345697189672583411487362953259-4687582671934493825176671493852"
+# board = "7591824638163475292345697189672583411487362953259--687582671934493825176671493852"
 
 def guess(board)
   # puts "this is guess(board) function"
@@ -250,13 +258,24 @@ end
 
 def find_available_options_in_block(board, block_index)
   results = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-  block_row_index = block_index / 8 / 3
-  block_col_index = block_index % 3
-  block_base_indexes = [0, 1, 2, 9, 10, 11, 18, 19, 20]
-  block_index_offset = block_index - block_base_indexes[(block_row_index * 3) + block_col_index]
-  block_base_indexes.each do |block_base_index|
-    index = block_base_index + block_index_offset
+  block_indexes = get_block_indexes(block_index)
+  block_indexes.each do |index|
     results.delete_if { |result| result.to_s == board[index] }
   end
   results
+end
+
+def get_block_indexes(index)
+  block_row_index = index / 9 % 3
+  block_col_index = index % 3
+  block_base_indexes = [0, 1, 2, 9, 10, 11, 18, 19, 20]
+  block_index_offset = index - block_base_indexes[(block_row_index * 3) + block_col_index]
+  block_base_indexes.map { |index| index += block_index_offset }
+end
+
+def display(array)
+  array.each do |index|
+    print get_block_indexes(index)
+    print "\n"
+  end
 end
