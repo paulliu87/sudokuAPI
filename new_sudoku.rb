@@ -10,6 +10,13 @@
 # 72 73 74 75 76 77 78 79 80
 
 def solve(board)
+  solve_with_basic_logic(board)
+  solve_with_advanced_logic(board) if !solved?(board)
+  solve_with_educated_guessing(board) if !solved?(board)
+end
+# board = "7591824638163475292345697189672583411487362953259--687582671934493825176671493852"
+# board = "123456789123456789123456789123456789123456789123456789123456789123456789123456789"
+def solve_with_basic_logic(board)
   initial_board = ""
   while true
     # puts board
@@ -30,27 +37,58 @@ def solve(board)
     break if initial_board == board
   end
 end
-# board = "7591824638163475292345697189672583411487362953259--687582671934493825176671493852"
-# board = "123456789123456789123456789123456789123456789123456789123456789123456789123456789"
+
+def solve_with_advanced_logic(board)
+  initial_board = ""
+  while true
+    initial_board = board.dup
+    guessed_board = guess(board.dup)
+    return guessed_board if initial_board == guessed_board(board)
+    solve_with_advanced_logic(initial_board) if !solved?(guessed_board)
+    return guessed_board if solved?(guessed_board)
+  end
+end
+
 def guess(board)
-  # puts "this is guess(board) function"
-  best_guess = find_index_with_least_unknown(board)
-  index = best_guess.keys.first
-  options = best_guess.values.first
-  # method = best_guess.values.first[1]
+  if solved?(board)
+    return board
+  end
+  best_start_index = find_index_with_least_unknown(board)
+  options = find_available_options_in_all(board, best_start_index)
   if !options.empty?
-    copy_board = board.dup
     options.each do |option|
-      result = try(copy_board, index, option)
-      if solved?(copy_board)
-        return copy_board
-      else
-        return solve(copy_board)
-      end
+      fill_guess(board, best_start_index, option)
+      guessed_board = guess(board.dup)
+      return guessed_board if solved?(guessed_board)
+      remove_guess(board, best_start_index, option)
     end
   else
     board
   end
+end
+
+def find_index_with_least_unknown(board)
+  results = []
+  index_with_min_options = 0
+  least_num_of_options = 9
+  board.each_char.with_index(0) do |char, index|
+    if char == "-"
+      num_of_options = find_available_options_in_all(board, index).length
+      results[index] = num_of_options
+      least_num_of_options = num_of_options; index_with_min_options = index if num_of_options < least_num_of_options
+    end
+  end
+  index_with_min_options
+end
+
+def fill_guess(board, index, guess)
+  board(index) = guess
+  board
+end
+
+def remove_guess(board, index, guess)
+  board(index) = "-" if board(index) == guess
+  board
 end
 
 def try(board, index, option)
