@@ -83,31 +83,89 @@ describe "Sudoku" do
       expect(solved?(hard_board_5)).to eq(true)
     end
   end
-  
+
   context "when solve_with_basic_logic(board) function runs" do
-    it "#" do
+    it "solves the simple_board_1 successfuly" do
+      solve(simple_board_1)
+      expect(solved?(simple_board_1)).to eq(true)
     end
-  end
+    it "solves the simple_board_2 successfuly" do
+      solve(simple_board_2)
+      expect(solved?(simple_board_2)).to eq(true)
+    end
+    it "solves the simple_board_3 successfuly" do
+      solve(simple_board_3)
+      expect(solved?(simple_board_3)).to eq(true)
+    end
+    it "solves the simple_board_4 successfuly" do
+      solve(simple_board_4)
+      expect(solved?(simple_board_4)).to eq(true)
+    end
+    it "solves the simple_board_5 successfuly" do
+      solve(simple_board_5)
+      expect(solved?(simple_board_5)).to eq(true)
+    end
   end
 
   context "when solve_with_advanced_logic(board) function runs" do
-    it "#" do
+    it "solves the advanced_board_1 successfuly" do
+      solve(advanced_board_1)
+      expect(solved?(advanced_board_1)).to eq(true)
+    end
+    it "solves the advanced_board_2 successfuly" do
+      solve(advanced_board_2)
+      expect(solved?(advanced_board_2)).to eq(true)
+    end
+    it "solves the advanced_board_3 successfuly" do
+      solve(advanced_board_3)
+      expect(solved?(advanced_board_3)).to eq(true)
+    end
+    it "solves the advanced_board_4 successfuly" do
+      solve(advanced_board_4)
+      expect(solved?(advanced_board_4)).to eq(true)
+    end
+    it "solves the advanced_board_5 successfuly" do
+      solve(advanced_board_5)
+      expect(solved?(advanced_board_5)).to eq(true)
     end
   end
-  end
+
   context "when guess(board) function runs" do
-    it "#" do
+    it "solves the hard_board_1 successfuly" do
+      solve(hard_board_1)
+      expect(solved?(hard_board_1)).to eq(true)
+    end
+    it "solves the hard_board_2 successfuly" do
+      solve(hard_board_2)
+      expect(solved?(hard_board_2)).to eq(true)
+    end
+    it "solves the hard_board_3 successfuly" do
+      solve(hard_board_3)
+      expect(solved?(hard_board_3)).to eq(true)
+    end
+    it "solves the hard_board_4 successfuly" do
+      solve(hard_board_4)
+      expect(solved?(hard_board_4)).to eq(true)
+    end
+    it "solves the hard_board_5 successfuly" do
+      solve(hard_board_5)
+      expect(solved?(hard_board_5)).to eq(true)
     end
   end
-  end
+
   context "when find_index_with_least_unknown(board) function runs" do
-    it "#" do
+    test_board_1 = "7591824638163475292345697189672583411487362953259-4687582671934493825176671493852"
+    it "finds the index that with least number of unknowns" do
+      expect(find_index_with_least_unknown(test_board_1)).to eq(49)
     end
   end
-  end
+
   context "when fill_guess(board, index, guess) function runs" do
-    it "#" do
-    end
+    test_board_1 = "7591824638163475292345697189672583411487362953259-4687582671934493825176671493852"
+    context "when the given index is valid" do
+      it "fill the given index with the guessed value successfuly" do
+        expect{ fill_the_cell(test_board_1, 49, 1) }.to change{ board[49] }.from("-").to("1")
+      end
   end
   end
   context "when remove_guess(board, index, guess) function runs" do
